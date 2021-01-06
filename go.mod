@@ -6,6 +6,7 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/amalfra/etag v0.0.0-20190921100247-cafc8de96bc5
 	github.com/aws/aws-sdk-go v1.36.21
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/grafov/m3u8 v0.11.1
 	github.com/markbates/pkger v0.17.1
@@ -24,5 +25,7 @@ require (
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.4.0
+	gorm.io/driver/sqlite v1.1.4
+	gorm.io/gorm v1.20.9
 	mvdan.cc/xurls v1.1.0
 )

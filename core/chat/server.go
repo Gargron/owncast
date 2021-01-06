@@ -10,7 +10,9 @@ import (
 	"golang.org/x/net/websocket"
 
 	"github.com/owncast/owncast/config"
+	"github.com/owncast/owncast/core/data"
 	"github.com/owncast/owncast/models"
+	"gorm.io/gorm"
 )
 
 var (
@@ -153,7 +155,7 @@ func (s *server) sendWelcomeMessageToClient(c *Client) {
 		time.Sleep(7 * time.Second)
 
 		initialChatMessageText := fmt.Sprintf("Welcome to %s! %s", config.Config.InstanceDetails.Title, config.Config.InstanceDetails.Summary)
-		initialMessage := models.ChatEvent{ClientID: "owncast-server", Author: config.Config.InstanceDetails.Name, Body: initialChatMessageText, ID: "initial-message-1", MessageType: "SYSTEM", Visible: true, Timestamp: time.Now()}
+		initialMessage := models.ChatEvent{ClientID: "owncast-server", Author: config.Config.InstanceDetails.Name, Body: initialChatMessageText, ID: data.GetNode().Generate().Int64(), MessageType: "SYSTEM", DeletedAt: gorm.DeletedAt{}, CreatedAt: time.Now()}
 		c.write(initialMessage)
 	}()
 }

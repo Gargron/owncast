@@ -6,5 +6,5 @@ type NameChangeEvent struct {
 	NewName string `json:"newName"`
 	Image   string `json:"image"`
 	Type    string `json:"type"`
-	ID      string `json:"id"`
+	ID      int64  `json:"id"`
 }

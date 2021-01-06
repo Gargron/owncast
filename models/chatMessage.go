@@ -9,24 +9,26 @@ import (
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
+	"gorm.io/gorm"
 	"mvdan.cc/xurls"
 )
 
 // ChatEvent represents a single chat message.
 type ChatEvent struct {
-	ClientID string `json:"-"`
+	ClientID string `gorm:"-" json:"-"`
 
-	Author      string    `json:"author,omitempty"`
-	Body        string    `json:"body,omitempty"`
-	ID          string    `json:"id"`
-	MessageType string    `json:"type"`
-	Visible     bool      `json:"visible"`
-	Timestamp   time.Time `json:"timestamp,omitempty"`
+	Author      string         `json:"author,omitempty"`
+	Body        string         `json:"body,omitempty"`
+	ID          int64          `gorm:"primaryKey" json:"id,string"`
+	MessageType string         `json:"type"`
+	DeletedAt   gorm.DeletedAt `gorm:"index" json:"deleted_at"`
+	CreatedAt   time.Time      `json:"created_at,omitempty"`
+	UpdatedAt   time.Time      `json:"updated_at,omitempty"`
 }
 
 // Valid checks to ensure the message is valid.
 func (m ChatEvent) Valid() bool {
-	return m.Author != "" && m.Body != "" && m.ID != ""
+	return m.Author != "" && m.Body != "" && m.ID != 0
 }
 
 // RenderAndSanitizeMessageBody will turn markdown into HTML, sanitize raw user-supplied HTML and standardize

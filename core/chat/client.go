@@ -12,12 +12,18 @@ import (
 	"github.com/owncast/owncast/geoip"
 	"github.com/owncast/owncast/models"
 	"github.com/owncast/owncast/utils"
-
+	"github.com/owncast/owncast/core/data"
 	"github.com/teris-io/shortid"
+	"github.com/bwmarrin/snowflake"
 	"golang.org/x/time/rate"
+	"gorm.io/gorm"
 )
 
 const channelBufSize = 100
+
+var (
+	_node *snowflake.Node
+)
 
 //Client represents a chat client.
 type Client struct {
@@ -65,6 +71,7 @@ func NewClient(ws *websocket.Conn) *Client {
 	clientID := socketID
 
 	rateLimiter := rate.NewLimiter(0.6, 5)
+	_node = data.GetNode()
 
 	return &Client{time.Now(), 0, userAgent, ipAddress, nil, clientID, nil, socketID, ws, ch, pingch, usernameChangeChannel, doneCh, rateLimiter}
 }
@@ -178,23 +185,26 @@ func (c *Client) userChangedName(data []byte) {
 	if err != nil {
 		log.Errorln(err)
 	}
+	id := _node.Generate()
 	msg.Type = NAMECHANGE
-	msg.ID = shortid.MustGenerate()
+	msg.ID = id.Int64()
 	_server.usernameChanged(msg)
 	c.Username = &msg.NewName
 }
 
 func (c *Client) chatMessageReceived(data []byte) {
 	var msg models.ChatEvent
+
 	err := json.Unmarshal(data, &msg)
+
 	if err != nil {
 		log.Errorln(err)
 	}
 
-	id, _ := shortid.Generate()
-	msg.ID = id
-	msg.Timestamp = time.Now()
-	msg.Visible = true
+	id := _node.Generate()
+	msg.ID = id.Int64()
+	msg.CreatedAt = time.Now()
+	msg.DeletedAt = gorm.DeletedAt{}
 
 	c.MessageCount++
 	c.Username = &msg.Author
